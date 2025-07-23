@@ -1,122 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Grid</title>
-    <style>
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 10px;
-            padding: 20px;
-        }
-        .grid-item {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: center;
-        }
-        .image-preview {
-            max-width: 100%;
-            max-height: 100px;
-            margin-bottom: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>4x3 Image Grid Export</title>
+  <style>
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 10px;
+      width: 80vw;
+      margin: 20px auto;
+    }
+
+    .grid-item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .grid-item img {
+      max-width: 100%;
+      max-height: 100px;
+      display: block;
+      margin: 10px auto;
+    }
+
+    button {
+      display: block;
+      margin: 30px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
-    <div class="grid-container">
-        <div class="grid-item">
-            <input type="file" accept="image/*" onchange="previewImage(this)">
-            <div class="image-preview" id="imagePreview1"></div>
-            <button onclick="exportToPNG('imagePreview1')">Export to PNG</button>
-        </div>
-        <div class="grid-item">
-            <input type="file" accept="image/*" onchange="previewImage(this)">
-            <div class="image-preview" id="imagePreview1"></div>
-            <button onclick="exportToPNG('imagePreview1')">Export to PNG</button>
-        </div>
-        <div class="grid-item">
-            <input type="file" accept="image/*" onchange="previewImage(this)">
-            <div class="image-preview" id="imagePreview1"></div>
-            <button onclick="exportToPNG('imagePreview1')">Export to PNG</button>
-        </div>
-        <div class="grid-item">
-            <input type="file" accept="image/*" onchange="previewImage(this)">
-            <div class="image-preview" id="imagePreview1"></div>
-            <button onclick="exportToPNG('imagePreview1')">Export to PNG</button>
-        </div>
-        <div class="grid-item">
-            <input type="file" accept="image/*" onchange="previewImage(this)">
-            <div class="image-preview" id="imagePreview1"></div>
-            <button onclick="exportToPNG('imagePreview1')">Export to PNG</button>
-        </div>
-        <div class="grid-item">
-            <input type="file" accept="image/*" onchange="previewImage(this)">
-            <div class="image-preview" id="imagePreview1"></div>
-            <button onclick="exportToPNG('imagePreview1')">Export to PNG</button>
-        </div>
-        <div class="grid-item">
-            <input type="file" accept="image/*" onchange="previewImage(this)">
-            <div class="image-preview" id="imagePreview1"></div>
-            <button onclick="exportToPNG('imagePreview1')">Export to PNG</button>
-        </div>
-        <div class="grid-item">
-            <input type="file" accept="image/*" onchange="previewImage(this)">
-            <div class="image-preview" id="imagePreview1"></div>
-            <button onclick="exportToPNG('imagePreview1')">Export to PNG</button>
-        </div>
-        <div class="grid-item">
-            <input type="file" accept="image/*" onchange="previewImage(this)">
-            <div class="image-preview" id="imagePreview1"></div>
-            <button onclick="exportToPNG('imagePreview1')">Export to PNG</button>
-        </div>
-        <div class="grid-item">
-            <input type="file" accept="image/*" onchange="previewImage(this)">
-            <div class="image-preview" id="imagePreview1"></div>
-            <button onclick="exportToPNG('imagePreview1')">Export to PNG</button>
-        </div>
-        <div class="grid-item">
-            <input type="file" accept="image/*" onchange="previewImage(this)">
-            <div class="image-preview" id="imagePreview1"></div>
-            <button onclick="exportToPNG('imagePreview1')">Export to PNG</button>
-        </div>
-        <div class="grid-item">
-            <input type="file" accept="image/*" onchange="previewImage(this)">
-            <div class="image-preview" id="imagePreview1"></div>
-            <button onclick="exportToPNG('imagePreview1')">Export to PNG</button>
-        </div>
-    </div>
 
-    <script>
-        function previewImage(input) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const imagePreview = input.parentElement.querySelector('.image-preview');
-                    imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
+  <div class="grid-container" id="grid">
+    <!-- 12 Grid Cells -->
+    <!-- Each will be generated by JS below -->
+  </div>
 
-        function exportToPNG(elementId) {
-            const element = document.getElementById(elementId);
-            const image = element.querySelector('img');
-            if (image) {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = image.width;
-                canvas.height = image.height;
-                ctx.drawImage(image, 0, 0);
-                const dataURL = canvas.toDataURL('image/png');
-                const a = document.createElement('a');
-                a.href = dataURL;
-                a.download = 'image.png';
-                a.click();
-            }
+  <button onclick="exportGridToPNG()">Export Grid to PNG</button>
+
+  <script>
+    const grid = document.getElementById("grid");
+    const NUM_ROWS = 3;
+    const NUM_COLS = 4;
+    const IMAGE_WIDTH = 200;
+    const IMAGE_HEIGHT = 200;
+    const imageData = Array(NUM_ROWS * NUM_COLS).fill(null);
+
+    // Generate grid dynamically
+    for (let i = 0; i < NUM_ROWS * NUM_COLS; i++) {
+      const cell = document.createElement("div");
+      cell.className = "grid-item";
+      cell.innerHTML = `
+        <input type="file" accept="image/*" onchange="handleImageUpload(event, ${i})">
+        <img id="preview-${i}" />
+      `;
+      grid.appendChild(cell);
+    }
+
+    // Handle Image Upload
+    function handleImageUpload(event, index) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = document.getElementById(`preview-${index}`);
+        img.src = e.target.result;
+        imageData[index] = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Export entire grid to PNG
+    async function exportGridToPNG() {
+      const canvas = document.createElement("canvas");
+      canvas.width = NUM_COLS * IMAGE_WIDTH;
+      canvas.height = NUM_ROWS * IMAGE_HEIGHT;
+      const ctx = canvas.getContext("2d");
+
+      const loadImage = (src) =>
+        new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.src = src;
+        });
+
+      for (let i = 0; i < imageData.length; i++) {
+        if (imageData[i]) {
+          const img = await loadImage(imageData[i]);
+          const x = (i % NUM_COLS) * IMAGE_WIDTH;
+          const y = Math.floor(i / NUM_COLS) * IMAGE_HEIGHT;
+          ctx.drawImage(img, x, y, IMAGE_WIDTH, IMAGE_HEIGHT);
         }
-    </script>
+      }
+
+      const a = document.createElement("a");
+      a.href = canvas.toDataURL("image/png");
+      a.download = "combined_grid.png";
+      a.click();
+    }
+  </script>
+
 </body>
 </html>
